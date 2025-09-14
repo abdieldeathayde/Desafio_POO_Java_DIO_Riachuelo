@@ -19,7 +19,7 @@ public class Money {
     }
 
     public void addHistory(MoneyAudit history) {
-        this.history.add(this.history);
+        this.history.add(history);
     }
 
 }
