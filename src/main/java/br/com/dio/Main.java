@@ -3,19 +3,16 @@ package br.com.dio;
 import br.com.dio.exception.AccountNotFoundException;
 import br.com.dio.exception.NoFundsEnoughException;
 import br.com.dio.model.AccountWallet;
+import br.com.dio.model.MoneyAudit;
 import br.com.dio.repository.AccountRepository;
 import br.com.dio.repository.InvestmentRepository;
-
-import java.time.temporal.ChronoUnit;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
-import java.util.Locale;
+import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
-
-import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 
 public class Main {
-
 
     private final static AccountRepository accountRepository = new AccountRepository();
     private final static InvestmentRepository investmentRepository = new InvestmentRepository();
@@ -44,24 +41,24 @@ public class Main {
 
             var option = sc.nextInt();
             switch(option) {
-                case 1: createAccount();
-                case 2: createInvestment();
-                case 3: createWalletInvestment();
-                case 4: deposit();
-                case 5: withdraw();
-                case 6: transferToAccount();
-                case 7: incInvestment();
-                case 8: rescueInvestment();
-                case 9: accountRepository.list().forEach(System.out::println);
-                case 10: investmentRepository.list().forEach(System.out::println);
-                case 11: investmentRepository.listWallets().forEach(System.out::println);
-                case 12: {
+                case 1 -> createAccount();
+                case 2 -> createInvestment();
+                case 3 -> createWalletInvestment();
+                case 4 -> deposit();
+                case 5 -> withdraw();
+                case 6 -> transferToAccount();
+                case 7 -> incInvestment();
+                case 8 -> rescueInvestment();
+                case 9 -> accountRepository.list().forEach(System.out::println);
+                case 10 -> investmentRepository.list().forEach(System.out::println);
+                case 11 -> investmentRepository.listWallets().forEach(System.out::println);
+                case 12 -> {
                     investmentRepository.updateAmount();
                     System.out.println("Investimentos reajustados");
                 }
-                case 13: checkHistory();
-                case 14: System.exit(0);
-                default: System.out.println("Opção inválida");
+                case 13 -> checkHistory();
+                case 14 -> System.exit(0);
+                default -> System.out.println("Opção inválida");
 
 
             }
@@ -159,18 +156,21 @@ public class Main {
         }
     }
 
-    private static void checkHistory() {
+    private static void checkHistory(){
         System.out.println("Informe a chave pix da conta para verificar extrato:");
         var pix = sc.next();
         AccountWallet wallet;
         try {
-            wallet = accountRepository.findByPix(pix);
-            var audit = wallet.getFinancialTransactions();
-            var group = audit.stream()
-                    .collect(Collectors.groupingBy(t -> t.createdAt().truncatedTo(SECONDS)));
-        } catch (AccountNotFoundException ex) {
+            var sortedHistory = accountRepository.getHistory(pix);
+            sortedHistory.forEach((OffsetDateTime k, List<MoneyAudit> v) -> {
+                System.out.println(k.format(ISO_DATE_TIME));
+                System.out.println(v.getFirst().transactionId());
+                System.out.println(v.getFirst().description());
+                System.out.println("R$" + v.size());
+            });
+        } catch (AccountNotFoundException ex){
             System.out.println(ex.getMessage());
         }
-
     }
+
 }
