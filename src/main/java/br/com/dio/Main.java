@@ -2,6 +2,7 @@ package br.com.dio;
 
 import br.com.dio.exception.AccountNotFoundException;
 import br.com.dio.exception.NoFundsEnoughException;
+import br.com.dio.exception.WalletNotFoundException;
 import br.com.dio.model.AccountWallet;
 import br.com.dio.model.MoneyAudit;
 import br.com.dio.repository.AccountRepository;
@@ -26,7 +27,7 @@ public class Main {
             System.out.println("Selecione a operação desejada");
             System.out.println("1 - Criar uma conta");
             System.out.println("2 - Criar um investimento");
-            System.out.println("3 - fazer um investimento");
+            System.out.println("3 - Criar uma carteira de investimento");
             System.out.println("4 - Depositar na conta");
             System.out.println("5 - Sacar da conta");
             System.out.println("6 - Transferência entre contas");
@@ -166,9 +167,9 @@ public class Main {
                 System.out.println(k.format(ISO_DATE_TIME));
                 System.out.println(v.getFirst().transactionId());
                 System.out.println(v.getFirst().description());
-                System.out.println("R$" + v.size());
+                System.out.println("R$" + (v.size() / 100) + "," + (v.size() % 100));
             });
-        } catch (AccountNotFoundException ex){
+        } catch (WalletNotFoundException | AccountNotFoundException ex){
             System.out.println(ex.getMessage());
         }
     }

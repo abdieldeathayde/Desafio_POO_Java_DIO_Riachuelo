@@ -53,7 +53,7 @@ public abstract class Wallet {
     public String toString() {
         return "Wallet{" +
                 "service=" + service +
-                ", money= R$" + (getFunds() / 100) +
+                ", money= R$" + money.size() / 100 + "," + money.size() % 100 +
                 '}';
     }
 }
